@@ -1,0 +1,4 @@
+window.application = {
+    blocks: {},
+    screens: {},
+};
