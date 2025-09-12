@@ -1,0 +1,27 @@
+{
+    "name": "card-game",
+    "version": "1.0.0",
+    "description": "This card game is quite simple: you need to choose all the pairs of cards.",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+ssh://git@github.com/Goodwin126/card_game.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/Goodwin126/card_game/issues"
+    },
+    "homepage": "https://github.com/Goodwin126/card_game#readme",
+    "devDependencies": {
+        "axios": "1.12.1",
+        "eslint": "8.17.0",
+        "eslint-config-prettier": "8.5.0",
+        "eslint-plugin-prettier": "4.0.0",
+        "prettier": "2.6.2",
+        "stylelint": "16.24.0"
+    }
+}
