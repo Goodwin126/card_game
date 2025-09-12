@@ -1,2 +1,3 @@
 # card_game
-A simple card game in which you need to guess a card
+
+This card game is quite simple: you need to choose all the pairs of cards.
