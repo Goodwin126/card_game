@@ -1,22 +1,13 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Сard game</title>
-        <link rel="stylesheet" href="./src/style.css" />
+        <title>Card game</title>
+        <link rel="stylesheet" href="./src/css/style.css" />
     </head>
     <body>
         <div class="app"></div>
-        <script src="./src/js/index.js"></script>
-        <script src="./src/js/start.js"></script>
-        <script src="./src/js/play.js"></script>
-        <script src="./src/lib/template-engine.js"></script>
-        <script>
-            const value = localStorage.getItem("level-card-game");
-            if (!value) {
-                const start = new StartPage(document.querySelector(".app"));
-            }
-        </script>
     </body>
+    <script type="module" src="./src/js/index.js"></script>
 </html>
