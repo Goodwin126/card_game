@@ -1,5 +1,6 @@
 import { StartPage } from "./start.js";
 import { templateEngine } from "../lib/template-engine.js";
+import "../css/style.css";
 
 export class PlayPage {
     constructor(element) {
