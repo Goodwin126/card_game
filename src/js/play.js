@@ -1,6 +1,5 @@
-import { StartPage } from "./start.js";
 import { templateEngine } from "../lib/template-engine.js";
-import "../css/style.css";
+import { StartPage } from "./start.js";
 
 export class PlayPage {
     constructor(element) {
@@ -8,8 +7,17 @@ export class PlayPage {
             throw new Error("передана не HTML элемент");
         }
         this.element = element;
+        window.application.initialized = true;
+        window.application.currentPage = "play";
+
+        window.application.level = localStorage.getItem("level-card-game");
         this.oponCards = [];
         this.deck = this.createDeck();
+
+        if (!this.element.querySelector(".card-deck")) {
+            console.error("Элемент .card-deck не найден!");
+            return;
+        }
 
         this.buttonRestart = document.querySelector(".btn-restart");
         this.buttonRestart.addEventListener("click", () => {
@@ -40,9 +48,10 @@ export class PlayPage {
     checkCardsMatch() {
         // Функция проверки на совпадение
         if (this.oponCards.length % 2 === 0) {
-            const [index1, index2] = this.oponCards;
-            const card1 = this.cardsForGame[index1];
-            const card2 = this.cardsForGame[index2];
+            const index1 = this.oponCards[this.oponCards.length - 2];
+            const index2 = this.oponCards[this.oponCards.length - 1];
+            let card1 = this.cardsForGame[index1];
+            let card2 = this.cardsForGame[index2];
 
             if (card1.rank === card2.rank && card1.suit === card2.suit) {
                 this.checkGameOver();
@@ -55,13 +64,17 @@ export class PlayPage {
     }
     checkGameOver() {
         if (this.oponCards.length === this.cardsForGame.length) {
-            alert("Поздравляем!Вы выйграли!");
+            alert("Поздравляем! Вы выиграли!");
+            this.element.innerHTML = "";
+            new StartPage(this.element);
         }
     }
 
     onClickButtonRestart() {
         //Клик по кнопке "Начать заново"
         this.element.innerHTML = "";
+        window.application.initialized = false;
+        localStorage.removeItem("level-card-game");
         new StartPage(this.element);
     }
 
@@ -97,13 +110,18 @@ export class PlayPage {
     }
 
     selectCardByLevel(deck) {
-        // Функция выбора карт по уровню
-        const levels = {
-            1: 3,
-            2: 6,
-            3: 9,
-        };
-        deck.length = levels[this.level] || 3;
+        const level = window.application.level;
+        switch (level) {
+            case "1":
+                deck.length = 3;
+                break;
+            case "2":
+                deck.length = 6;
+                break;
+            case "3":
+                deck.length = 9;
+                break;
+        }
     }
 
     createDuble(cards) {
@@ -144,9 +162,9 @@ export class PlayPage {
     }
 
     render() {
-        //функция отрисовики всех карт
         const template = PlayPage.template(this.cardsForGame);
         const element = templateEngine(template);
+        this.element.innerHTML = "";
         this.element.appendChild(element);
     }
 

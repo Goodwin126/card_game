@@ -1,22 +1,28 @@
-import { StartPage } from "./start.js";
 import { PlayPage } from "./play.js";
+import { StartPage } from "./start.js";
+import "../css/style.css";
 
 document.addEventListener("DOMContentLoaded", () => {
+    if (window.application && window.application.initialized) {
+        console.warn("Приложение уже инициализировано!");
+        return;
+    }
+
     window.application = {
-        level: null,
+        initialized: false,
+        currentPage: null,
     };
 
-    const value = localStorage.getItem("level-card-game");
     const appElement = document.querySelector(".app");
 
-    if (!value) {
-        if (appElement) {
-            new StartPage(appElement);
-        }
+    if (!appElement) {
+        console.error("Элемент .app не найден!");
+        return;
+    }
+
+    if (!localStorage.getItem("level-card-game")) {
+        new StartPage(appElement);
     } else {
-        if (appElement) {
-            window.application.level = value;
-            new PlayPage(appElement);
-        }
+        new PlayPage(appElement);
     }
 });

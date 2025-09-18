@@ -7,12 +7,18 @@ export class StartPage {
             throw new Error("передана не HTML элемент");
         }
         this.element = element;
+        if (window.application.initialized) {
+            return;
+        }
+
+        window.application.initialized = true;
+        window.application.currentPage = "start";
+
         this.onHendlerClickLevel = this.onHendlerClickLevel.bind(this);
         this.onHendkerClickStart = this.onHendkerClickStart.bind(this);
-
         this.render();
-
         this.level = element.querySelector(".card-level-box");
+
         this.buttonChoice = element.querySelector(".card-level-button");
         this.levelItems = element
             .querySelector(".card-level-box")
@@ -25,12 +31,13 @@ export class StartPage {
     render() {
         const template = StartPage.template();
         const element = templateEngine(template);
+        this.element.innerHTML = ""; // Очищаем элемент перед рендерингом
         this.element.appendChild(element);
     }
 
     onHendkerClickStart() {
         this.element.innerHTML = "";
-        console.log(`Вы выбрали уровень "${window.application.level}"!`);
+        window.application.currentPage = "play";
         new PlayPage(this.element);
     }
 
@@ -45,7 +52,6 @@ export class StartPage {
 
         event.target.classList.add("card-level-item-choice");
         const level = event.target.textContent;
-        window.application.level = level;
         localStorage.setItem("level-card-game", level);
         this.buttonChoice.removeAttribute("disabled");
     }
