@@ -7,10 +7,9 @@ export class PlayPage {
             throw new Error("передана не HTML элемент");
         }
         this.element = element;
-        window.application.initialized = true;
-        window.application.currentPage = "play";
+        this.currentPage = "play";
 
-        window.application.level = localStorage.getItem("level-card-game");
+        this.level = localStorage.getItem("level-card-game");
         this.oponCards = [];
         this.deck = this.createDeck();
 
@@ -73,7 +72,6 @@ export class PlayPage {
     onClickButtonRestart() {
         //Клик по кнопке "Начать заново"
         this.element.innerHTML = "";
-        window.application.initialized = false;
         localStorage.removeItem("level-card-game");
         new StartPage(this.element);
     }
@@ -101,7 +99,7 @@ export class PlayPage {
         this.cardsForGame = this.createDuble(deck);
         //перемешивает полученные карты
         this.shuffleDeck(this.cardsForGame);
-        window.application.cards = this.cardsForGame;
+        this.cards = this.cardsForGame;
         //отрисовываем карты
         this.render();
         setTimeout(() => {
@@ -110,7 +108,7 @@ export class PlayPage {
     }
 
     selectCardByLevel(deck) {
-        const level = window.application.level;
+        const level = this.level;
         switch (level) {
             case "1":
                 deck.length = 3;

@@ -7,12 +7,7 @@ export class StartPage {
             throw new Error("передана не HTML элемент");
         }
         this.element = element;
-        if (window.application.initialized) {
-            return;
-        }
-
-        window.application.initialized = true;
-        window.application.currentPage = "start";
+        this.currentPage = "start";
 
         this.onHendlerClickLevel = this.onHendlerClickLevel.bind(this);
         this.onHendkerClickStart = this.onHendkerClickStart.bind(this);
@@ -37,7 +32,7 @@ export class StartPage {
 
     onHendkerClickStart() {
         this.element.innerHTML = "";
-        window.application.currentPage = "play";
+        this.currentPage = "play";
         new PlayPage(this.element);
     }
 

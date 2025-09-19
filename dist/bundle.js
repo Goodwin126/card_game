@@ -35,13 +35,11 @@ class PlayPage {
             throw new Error("передана не HTML элемент");
         }
         this.element = element;
-        window.application.initialized = true;
         window.application.currentPage = "play";
 
         window.application.level = localStorage.getItem("level-card-game");
         this.oponCards = [];
         this.deck = this.createDeck();
-        console.log(window.application.level);
 
         if (!this.element.querySelector(".card-deck")) {
             console.error("Элемент .card-deck не найден!");
@@ -77,13 +75,13 @@ class PlayPage {
     checkCardsMatch() {
         // Функция проверки на совпадение
         if (this.oponCards.length % 2 === 0) {
-            const [index1, index2] = this.oponCards;
-            const card1 = this.cardsForGame[index1];
-            const card2 = this.cardsForGame[index2];
+            const index1 = this.oponCards[this.oponCards.length - 2];
+            const index2 = this.oponCards[this.oponCards.length - 1];
+            let card1 = this.cardsForGame[index1];
+            let card2 = this.cardsForGame[index2];
 
             if (card1.rank === card2.rank && card1.suit === card2.suit) {
                 this.checkGameOver();
-                this.oponCards = []; // Очищаем массив открытых карт
                 // Карты совпали
             } else {
                 // Перевернуть карты обратно
@@ -102,7 +100,6 @@ class PlayPage {
     onClickButtonRestart() {
         //Клик по кнопке "Начать заново"
         this.element.innerHTML = "";
-        window.application.initialized = false;
         localStorage.removeItem("level-card-game");
         new _start_js__WEBPACK_IMPORTED_MODULE_1__.StartPage(this.element);
     }
@@ -140,7 +137,6 @@ class PlayPage {
 
     selectCardByLevel(deck) {
         const level = window.application.level;
-        console.log(level);
         switch (level) {
             case "1":
                 deck.length = 3;
@@ -380,16 +376,10 @@ class StartPage {
         if (!(element instanceof HTMLElement)) {
             throw new Error("передана не HTML элемент");
         }
-        this.element = element;
+        window.application.currentPage = "start";
+
         this.onHendlerClickLevel = this.onHendlerClickLevel.bind(this);
         this.onHendkerClickStart = this.onHendkerClickStart.bind(this);
-
-        if (window.application.initialized) {
-            return;
-        }
-
-        window.application.initialized = true;
-        window.application.currentPage = "start";
         this.render();
         this.level = element.querySelector(".card-level-box");
 
@@ -590,13 +580,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 document.addEventListener("DOMContentLoaded", () => {
-    if (window.application && window.application.initialized) {
-        console.warn("Приложение уже инициализировано!");
-        return;
-    }
-
     window.application = {
-        initialized: false,
         currentPage: null,
     };
 
