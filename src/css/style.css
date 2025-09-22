@@ -6,31 +6,32 @@
     --green-color: rgb(122 193 0);
     --gray-color: rgb(170 168 168);
     --black-color: rgb(0 0 1);
-    --image-clubs: url("../src/images/clubs.svg");
-    --image-spades: url("../src/images/spades.svg");
+    --image-clubs: url("../images/clubs.svg");
+    --image-diamonds: url("../images/diamonds.svg");
+    --image-hearts: url("../images/hearts.svg");
+    --image-spades: url("../images/spades.svg");
 }
 
 @font-face {
     font-family: StratosSkyengXL;
-    src: url("./src/fonts/Web fonts/stratosskyengweb-regular.woff")
+    src: url("../fonts/Web fonts/stratosskyengweb-regular.woff")
         format("truetype");
 }
 
 @font-face {
     font-family: StratosSkyengS;
-    src: url("./src/fonts/Web fonts/stratosskyengweb-thin.woff")
-        format("truetype");
+    src: url("../fonts/Web fonts/stratosskyengweb-thin.woff") format("truetype");
 }
 
 @font-face {
     font-family: StratosSkyengM;
-    src: url("./src/fonts/Web fonts/stratosskyengweb-regular.woff2")
+    src: url("../fonts/Web fonts/stratosskyengweb-regular.woff2")
         format("truetype");
 }
 
 @font-face {
     font-family: StratosSkyeng;
-    src: url("./src/fonts/Web fonts/stratosskyengweb-light.woff2")
+    src: url("../fonts/Web fonts/stratosskyengweb-light.woff2")
         format("truetype");
 }
 
@@ -163,9 +164,11 @@ html {
 }
 
 .card-deck {
+    max-width: 895px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 15px;
+    flex-wrap: wrap;
 }
 
 .card-suit {
@@ -173,8 +176,13 @@ html {
     flex-direction: row;
     gap: 15px;
 }
+.card-open,
+.card-back {
+    transition: transform 0.4s ease, background 0.4s ease;
+    transform-style: preserve-3d;
+}
 
-.card {
+.card-back {
     width: 95px;
     height: 133px;
     border-radius: 4px;
@@ -183,13 +191,15 @@ html {
     justify-content: center;
     background-color: var(--white-color);
     cursor: pointer;
-    background-image: url("../src/images/card-back.png");
+    background-image: url("../images/card-back.png");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
+    transform: rotateY(180deg);
+    backface-visibility: hidden;
 }
 
-.card-open {
+.card {
     padding: 5px 6px;
     width: 85px;
     height: 123px;
@@ -200,6 +210,10 @@ html {
     background-color: var(--white-color);
     cursor: pointer;
     flex-direction: column;
+    width: 100px;
+    height: 140px;
+    transform: rotateY(0deg);
+    backface-visibility: hidden;
 }
 
 .card-box-up {
@@ -220,6 +234,16 @@ html {
     flex-direction: column;
     align-items: center;
 }
+.cart-suit {
+    width: 30px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
 
 .card-small-suit {
     width: 7px;
@@ -230,26 +254,33 @@ html {
     justify-content: center;
     background-color: var(--white-color);
     cursor: pointer;
-    background-image: var(--image-spades);
-    background-size: cover;
+    background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
+}
+
+.card-small-suit_clubs,
+.cart-suit_clubs {
+    background-image: var(--image-clubs);
+}
+
+.card-small-suit_diamonds,
+.cart-suit_diamonds {
+    background-image: var(--image-diamonds);
+}
+
+.card-small-suit_hearts,
+.cart-suit_hearts {
+    background-image: var(--image-hearts);
+}
+
+.card-small-suit_spades,
+.cart-suit_spades {
+    background-image: var(--image-spades);
 }
 
 .card-small-box-reverse {
     transform: rotate(180deg); /* Поворот на 180 градусов */
-}
-
-.cart-suit {
-    width: 30px;
-    height: 26px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-image: var(--image-spades);
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
 }
 
 .btn-restart {

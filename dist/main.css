@@ -1,0 +1,339 @@
+/*!*********************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/css/style.css ***!
+  \*********************************************************************/
+:root {
+    --white-color: rgb(255 255 255);
+    --lith-blue-color: rgb(194 245 255);
+    --blue-slightly-lighter: rgb(0 128 193);
+    --blue-color: rgb(0 73 128);
+    --green-color: rgb(122 193 0);
+    --gray-color: rgb(170 168 168);
+    --black-color: rgb(0 0 1);
+    --image-clubs: url(7f91ce47ecbf6ae38498.svg);
+    --image-diamonds: url(6d6202122f9a41366f7d.svg);
+    --image-hearts: url(be33f4a44d6f0430c5e0.svg);
+    --image-spades: url(93f2e7c8261b046c228b.svg);
+}
+
+@font-face {
+    font-family: StratosSkyengXL;
+    src: url(d7d99bd522cf2d77ce4a.woff)
+        format("truetype");
+}
+
+@font-face {
+    font-family: StratosSkyengS;
+    src: url(b26071954da0a1a45eb6.woff) format("truetype");
+}
+
+@font-face {
+    font-family: StratosSkyengM;
+    src: url(ce93393e831d32412096.woff2)
+        format("truetype");
+}
+
+@font-face {
+    font-family: StratosSkyeng;
+    src: url(cf1f564911dcb70c66c5.woff2)
+        format("truetype");
+}
+
+body,
+html {
+    font-family: StratosSkyengXL, sans-serif;
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    background: var(--blue-color);
+}
+
+.app {
+    padding: 23px;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.card-box {
+    background: var(--lith-blue-color);
+    width: 480px;
+    height: 459px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card-level-text {
+    font-family: StratosSkyengS, sans-serif;
+    margin: 52px 0 0;
+    font-weight: 400;
+    font-size: 40px;
+    text-align: center;
+    color: var(--blue-color);
+    width: 208px;
+    height: 96px;
+    line-height: 48px;
+}
+
+.card-level-box {
+    margin-top: 48px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.card-level-item {
+    font-family: StratosSkyeng, sans-serif;
+    border: none;
+    width: 97px;
+    height: 98px;
+    font-weight: 700;
+    font-size: 64px;
+    text-align: center;
+    color: var(--blue-slightly-lighter);
+    background-color: var(--white-color);
+    border-radius: 10px;
+    line-height: 98px;
+    cursor: pointer;
+}
+
+.card-level-item-choice {
+    color: var(--green-color);
+}
+
+.card-level-button,
+.card-celebrate-button {
+    font-family: StratosSkyeng, sans-serif;
+    border: none;
+    margin-top: 67px;
+    width: 246px;
+    height: 50px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 47px;
+    text-align: center;
+    color: var(--white-color);
+    background-color: var(--green-color);
+    cursor: pointer;
+}
+
+.card-level-button:disabled {
+    background-color: var(--gray-color);
+}
+
+.control-panel {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: flex-end;
+    padding-bottom: 46px;
+}
+
+.timer-artical-sec,
+.timer-artical-min {
+    margin: 0;
+}
+
+.timer-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    width: 155px;
+    height: 91px;
+    color: var(--white-color);
+}
+
+.timer-watch {
+    font-family: StratosSkyeng, sans-serif;
+    display: flex;
+    width: 155px;
+    height: 66px;
+    font-weight: 800;
+    font-size: 64px;
+}
+
+.timer-artical {
+    font-family: StratosSkyeng, sans-serif;
+    font-weight: 400;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 57px;
+}
+
+.card-deck {
+    max-width: 895px;
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.card-suit {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+}
+.card-open,
+.card-back {
+    transition: transform 0.4s ease, background 0.4s ease;
+    transform-style: preserve-3d;
+}
+
+.card-back {
+    width: 95px;
+    height: 133px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--white-color);
+    cursor: pointer;
+    background-image: url(c253bd030d4185d2d9ea.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    transform: rotateY(180deg);
+    backface-visibility: hidden;
+}
+
+.card {
+    padding: 5px 6px;
+    width: 85px;
+    height: 123px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--white-color);
+    cursor: pointer;
+    flex-direction: column;
+    width: 100px;
+    height: 140px;
+    transform: rotateY(0deg);
+    backface-visibility: hidden;
+}
+
+.card-box-up {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+.card-box-down {
+    display: flex;
+    flex-direction: row-reverse;
+    width: 100%;
+}
+
+.card-small-box,
+.card-small-box-reverse {
+    display: flex;
+    justify-items: center;
+    flex-direction: column;
+    align-items: center;
+}
+.cart-suit {
+    width: 30px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.card-small-suit {
+    width: 7px;
+    height: 6px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--white-color);
+    cursor: pointer;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.card-small-suit_clubs,
+.cart-suit_clubs {
+    background-image: var(--image-clubs);
+}
+
+.card-small-suit_diamonds,
+.cart-suit_diamonds {
+    background-image: var(--image-diamonds);
+}
+
+.card-small-suit_hearts,
+.cart-suit_hearts {
+    background-image: var(--image-hearts);
+}
+
+.card-small-suit_spades,
+.cart-suit_spades {
+    background-image: var(--image-spades);
+}
+
+.card-small-box-reverse {
+    transform: rotate(180deg); /* Поворот на 180 градусов */
+}
+
+.btn-restart {
+    font-family: StratosSkyengS, sans-serif;
+    font-weight: 400;
+    font-size: 24px;
+    border: none;
+    margin-top: 67px;
+    width: 246px;
+    height: 50px;
+    border-radius: 12px;
+    text-align: center;
+    color: var(--white-color);
+    background-color: var(--green-color);
+}
+
+.card-celebrate-img {
+    padding-top: 30px;
+    width: 96px;
+    height: 96px;
+}
+
+.card-celebrate-text {
+    font-family: StratosSkyengM, sans-serif;
+    margin: 0;
+    padding-top: 9px;
+    font-weight: 400;
+    font-size: 40px;
+    color: var(--blue-color);
+}
+
+.card-celebrate-time-text {
+    margin: 0;
+    padding-top: 28px;
+    font-family: StratosSkyengS, sans-serif;
+    font-weight: 400;
+    font-size: 24px;
+    color: var(--black-color);
+}
+
+.card-timer-watch {
+    padding-top: 10px;
+    font-family: StratosSkyengM, sans-serif;
+    font-weight: 400;
+    font-size: 64px;
+}
+
+.card-celebrate-button {
+    margin-top: 40px;
+}
+
+
+/*# sourceMappingURL=main.css.map*/
