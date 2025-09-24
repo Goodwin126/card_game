@@ -1,5 +1,5 @@
-import { PlayPage } from "./play.js";
-import { StartPage } from "./start.js";
+import { PlayPage } from "./play";
+import { StartPage } from "./start";
 import "../css/style.css";
 
 document.addEventListener("DOMContentLoaded", () => {

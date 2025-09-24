@@ -14,129 +14,266 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/js/play.js":
+/***/ "./src/js/lose.ts":
 /*!************************!*\
-  !*** ./src/js/play.js ***!
+  !*** ./src/js/lose.ts ***!
   \************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   PlayPage: () => (/* binding */ PlayPage)
-/* harmony export */ });
-/* harmony import */ var _lib_template_engine_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../lib/template-engine.js */ "./src/lib/template-engine.js");
-/* harmony import */ var _start_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./start.js */ "./src/js/start.js");
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-
-class PlayPage {
-    constructor(element) {
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LosePage = void 0;
+var template_engine_js_1 = __webpack_require__(/*! ../lib/template-engine.js */ "./src/lib/template-engine.js");
+var start_1 = __webpack_require__(/*! ./start */ "./src/js/start.ts");
+var LosePage = /** @class */ (function () {
+    function LosePage(element) {
+        var _this = this;
         if (!(element instanceof HTMLElement)) {
             throw new Error("передана не HTML элемент");
         }
         this.element = element;
-        window.application.currentPage = "play";
+        this.currentPage = "lose";
+        this.render();
+        this.buttonRestart = document.querySelector(".card-celebrate-button");
+        if (this.buttonRestart) {
+            this.buttonRestart.addEventListener("click", function () {
+                _this.onClickButtonRestart();
+            });
+        }
+    }
+    LosePage.prototype.onClickButtonRestart = function () {
+        this.element.innerHTML = "";
+        localStorage.removeItem("level-card-game");
+        new start_1.StartPage(this.element);
+    };
+    LosePage.prototype.render = function () {
+        var template = LosePage.template();
+        var element = (0, template_engine_js_1.templateEngine)(template);
+        this.element.innerHTML = "";
+        this.element.appendChild(element);
+    };
+    LosePage.template = function () {
+        return {
+            tag: "div",
+            cls: "card-box",
+            content: [
+                {
+                    tag: "img",
+                    cls: "card-celebrate-img",
+                    attrs: {
+                        alt: "смайлик поражения",
+                        src: "../static/lose.svg",
+                    },
+                },
+                {
+                    tag: "h6",
+                    cls: "card-celebrate-text",
+                    content: "Вы проиграли!",
+                },
+                {
+                    tag: "h6",
+                    cls: "card-celebrate-time-text",
+                    content: "Затраченное время:",
+                },
+                {
+                    tag: "div",
+                    cls: "card-timer-watch",
+                    content: "01.20",
+                },
+                {
+                    tag: "div",
+                    cls: "card-celebrate-button",
+                    content: "Играть снова",
+                },
+            ],
+        };
+    };
+    return LosePage;
+}());
+exports.LosePage = LosePage;
 
-        window.application.level = localStorage.getItem("level-card-game");
+
+/***/ }),
+
+/***/ "./src/js/play.ts":
+/*!************************!*\
+  !*** ./src/js/play.ts ***!
+  \************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PlayPage = void 0;
+var template_engine_js_1 = __webpack_require__(/*! ../lib/template-engine.js */ "./src/lib/template-engine.js");
+var start_1 = __webpack_require__(/*! ./start */ "./src/js/start.ts");
+var lose_1 = __webpack_require__(/*! ./lose */ "./src/js/lose.ts");
+var win_1 = __webpack_require__(/*! ./win */ "./src/js/win.ts");
+var PlayPage = /** @class */ (function () {
+    function PlayPage(element) {
+        var _this = this;
+        this.oponCards = [];
+        this.deck = [];
+        this.cardsForGame = [];
+        this.timerCardCover = null;
+        this.timerId = null; // ID интервала таймера
+        this.startTime = 0; // Время начала отсчета
+        this.elapsedTime = 0; // Прошедшее время
+        this.timeoutId = null;
+        if (!(element instanceof HTMLElement)) {
+            throw new Error("передана не HTML элемент");
+        }
+        this.element = element;
+        this.currentPage = "play";
+        this.level = localStorage.getItem("level-card-game");
         this.oponCards = [];
         this.deck = this.createDeck();
-
+        // Добавляем очистку при создании нового экземпляра
+        if (this.timerId) {
+            this.stopTimer();
+        }
+        this.startTimer();
         if (!this.element.querySelector(".card-deck")) {
             console.error("Элемент .card-deck не найден!");
             return;
         }
-
         this.buttonRestart = document.querySelector(".btn-restart");
-        this.buttonRestart.addEventListener("click", () => {
-            this.onClickButtonRestart();
-        });
-
+        if (this.buttonRestart) {
+            this.buttonRestart.addEventListener("click", function () {
+                _this.onClickButtonRestart();
+            });
+        }
         this.cards = document.querySelector(".card-deck");
-        this.cards.addEventListener("click", (event) => {
-            this.onClickCard(event);
-        });
-    }
-
-    onClickCard(event) {
-        // Обработчик клика по карте
-        if (event.target.classList.contains("card-back")) {
-            const index = event.target.dataset.index;
-            if (!this.oponCards.includes(index)) {
-                this.oponCards.push(index);
-
-                const card = this.cardsForGame[index];
-
-                this.renderCardOne(event.target, card);
-                this.checkCardsMatch();
-            }
+        if (this.cards) {
+            this.cards.addEventListener("click", function (event) {
+                _this.onClickCard(event);
+            });
         }
     }
-
-    checkCardsMatch() {
+    PlayPage.prototype.startTimer = function () {
+        var _this = this;
+        this.startTime = Date.now();
+        this.timerId = Number(setInterval(function () {
+            _this.updateTimer();
+        }, 1000));
+    };
+    // Остановка таймера
+    PlayPage.prototype.stopTimer = function () {
+        if (this.timerId) {
+            clearInterval(this.timerId);
+            this.timerId = null;
+        }
+        clearTimeout(this.timerCardCover);
+        this.timerCardCover = null;
+        this.oponCards = [];
+        this.deck = [];
+        this.cardsForGame = [];
+        this.elapsedTime = 0;
+        this.startTime = 0;
+    };
+    // Обновление отображения времени
+    PlayPage.prototype.updateTimer = function () {
+        this.elapsedTime = Date.now() - this.startTime;
+        var seconds = Math.floor(this.elapsedTime / 1000);
+        var minutes = Math.floor(seconds / 60);
+        // Форматируем минуты и секунды с ведущими нулями
+        var formattedMinutes = minutes.toString().padStart(2, "0");
+        var formattedSeconds = (seconds % 60).toString().padStart(2, "0");
+        var timerElement = document.querySelector(".timer-watch");
+        if (timerElement) {
+            timerElement.textContent = "".concat(formattedMinutes, ":").concat(formattedSeconds);
+        }
+    };
+    PlayPage.prototype.onClickCard = function (event) {
+        var target = event.target;
+        if (target.classList.contains("card-back")) {
+            // Извлекаем число из сохраненного значения
+            var indexStr = target.dataset.index;
+            if (indexStr && indexStr.startsWith("card_")) {
+                var index = parseInt(indexStr.slice(5), 10);
+                if (!isNaN(index) && !this.oponCards.includes(index)) {
+                    this.oponCards.push(index);
+                    if (index >= 0 && index < this.cardsForGame.length) {
+                        var card = this.cardsForGame[index];
+                        this.renderCardOne(target, card);
+                        this.checkCardsMatch();
+                    }
+                }
+            }
+        }
+    };
+    PlayPage.prototype.checkCardsMatch = function () {
         // Функция проверки на совпадение
         if (this.oponCards.length % 2 === 0) {
-            const index1 = this.oponCards[this.oponCards.length - 2];
-            const index2 = this.oponCards[this.oponCards.length - 1];
-            let card1 = this.cardsForGame[index1];
-            let card2 = this.cardsForGame[index2];
-
+            var index1 = this.oponCards[this.oponCards.length - 2];
+            var index2 = this.oponCards[this.oponCards.length - 1];
+            var card1 = this.cardsForGame[index1];
+            var card2 = this.cardsForGame[index2];
             if (card1.rank === card2.rank && card1.suit === card2.suit) {
                 this.checkGameOver();
                 // Карты совпали
-            } else {
-                // Перевернуть карты обратно
-                alert("Вы проиграли!");
+            }
+            else {
+                this.stopTimer(); // останавливаем таймер
+                this.element.innerHTML = "";
+                new lose_1.LosePage(this.element);
             }
         }
-    }
-    checkGameOver() {
+    };
+    PlayPage.prototype.checkGameOver = function () {
         if (this.oponCards.length === this.cardsForGame.length) {
-            alert("Поздравляем! Вы выиграли!");
+            this.stopTimer(); // останавливаем таймер
             this.element.innerHTML = "";
-            new _start_js__WEBPACK_IMPORTED_MODULE_1__.StartPage(this.element);
+            new win_1.WinPage(this.element);
         }
-    }
-
-    onClickButtonRestart() {
+    };
+    PlayPage.prototype.onClickButtonRestart = function () {
         //Клик по кнопке "Начать заново"
+        this.stopTimer(); // останавливаем таймер
         this.element.innerHTML = "";
         localStorage.removeItem("level-card-game");
-        new _start_js__WEBPACK_IMPORTED_MODULE_1__.StartPage(this.element);
-    }
-
-    createDeck() {
-        // Функция создания колоды карт
-        let deck = [];
-        const ranks = [6, 7, 8, 9, 10, "J", "Q", "K", "A"];
-        const suits = ["clubs", "diamonds", "hearts", "spades"];
-
-        //создаем калоду
-        for (const suit of suits) {
-            for (const rank of ranks) {
+        new start_1.StartPage(this.element);
+    };
+    PlayPage.prototype.createDeck = function () {
+        var _this = this;
+        var deck = [];
+        var ranks = [6, 7, 8, 9, 10, "J", "Q", "K", "A"];
+        var suits = ["clubs", "diamonds", "hearts", "spades"];
+        for (var _i = 0, suits_1 = suits; _i < suits_1.length; _i++) {
+            var suit = suits_1[_i];
+            for (var _a = 0, ranks_1 = ranks; _a < ranks_1.length; _a++) {
+                var rank = ranks_1[_a];
                 deck.push({
                     rank: rank,
                     suit: suit,
                 });
             }
         }
-        //перемешиваем калоду
         this.shuffleDeck(deck);
-        //выбираем карты исходя из уровня сложности
         this.selectCardByLevel(deck);
-        //создаём дубли
         this.cardsForGame = this.createDuble(deck);
-        //перемешивает полученные карты
         this.shuffleDeck(this.cardsForGame);
-        window.application.cards = this.cardsForGame;
-        //отрисовываем карты
         this.render();
-        setTimeout(() => {
-            this.renderCardCover();
-        }, 5000);
-    }
-
-    selectCardByLevel(deck) {
-        const level = window.application.level;
+        if (!this.timerCardCover) {
+            this.timerCardCover = Number(setTimeout(function () {
+                _this.renderCardCover();
+            }, 5000));
+        }
+        return deck;
+    };
+    PlayPage.prototype.selectCardByLevel = function (deck) {
+        //выборка карт по уровню
+        var level = this.level;
         switch (level) {
             case "1":
                 deck.length = 3;
@@ -148,53 +285,48 @@ class PlayPage {
                 deck.length = 9;
                 break;
         }
-    }
-
-    createDuble(cards) {
+    };
+    PlayPage.prototype.createDuble = function (cards) {
         // Функция создания дублей
-        const cardsForGame = [];
-        cards.forEach((card) => {
+        var cardsForGame = [];
+        cards.forEach(function (card) {
             cardsForGame.push(card);
-            cardsForGame.push({ ...card });
+            cardsForGame.push(__assign({}, card));
         });
         return cardsForGame;
-    }
-
-    renderCardCover() {
-        // Функция отрисовки одной карты
-        const cards = this.element.querySelectorAll(".card");
-        cards.forEach((card, index) => {
+    };
+    PlayPage.prototype.renderCardCover = function () {
+        //отрисовка рубашек карт
+        var cards = this.element.querySelectorAll(".card");
+        cards.forEach(function (card, index) {
             card.innerHTML = "";
             card.classList.add("card-back");
-            card.dataset.index = index;
+            card.dataset.index = "card_".concat(index);
         });
         return cards;
-    }
-
-    shuffleDeck(deck) {
+    };
+    PlayPage.prototype.shuffleDeck = function (deck) {
+        var _a;
         // Функция перемешивания колоды
-        for (let i = deck.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [deck[i], deck[j]] = [deck[j], deck[i]];
+        for (var i = deck.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            _a = [deck[j], deck[i]], deck[i] = _a[0], deck[j] = _a[1];
         }
-    }
-
-    renderCardOne(elementTarget, card) {
+    };
+    PlayPage.prototype.renderCardOne = function (elementTarget, card) {
         // Функция отрисовки рубашек карты
-        const template = PlayPage.templateCard(card);
-        const element = (0,_lib_template_engine_js__WEBPACK_IMPORTED_MODULE_0__.templateEngine)(template);
+        var template = PlayPage.templateCard(card);
+        var element = (0, template_engine_js_1.templateEngine)(template);
         elementTarget.classList.remove("card-back");
         elementTarget.appendChild(element);
-    }
-
-    render() {
-        const template = PlayPage.template(this.cardsForGame);
-        const element = (0,_lib_template_engine_js__WEBPACK_IMPORTED_MODULE_0__.templateEngine)(template);
+    };
+    PlayPage.prototype.render = function () {
+        var template = PlayPage.template(this.cardsForGame);
+        var element = (0, template_engine_js_1.templateEngine)(template);
         this.element.innerHTML = "";
         this.element.appendChild(element);
-    }
-
-    static template(deck) {
+    };
+    PlayPage.template = function (deck) {
         return {
             tag: "div",
             cls: "cards",
@@ -240,7 +372,7 @@ class PlayPage {
                 {
                     tag: "div",
                     cls: "card-deck",
-                    content: deck.map((card) => ({
+                    content: deck.map(function (card) { return ({
                         tag: "div",
                         cls: "card",
                         content: [
@@ -260,7 +392,7 @@ class PlayPage {
                                             tag: "div",
                                             cls: [
                                                 "card-small-suit",
-                                                `card-small-suit_${card.suit}`,
+                                                "card-small-suit_".concat(card.suit),
                                             ],
                                         },
                                     ],
@@ -268,7 +400,7 @@ class PlayPage {
                             },
                             {
                                 tag: "div",
-                                cls: ["cart-suit", `cart-suit_${card.suit}`],
+                                cls: ["cart-suit", "cart-suit_".concat(card.suit)],
                             },
                             {
                                 tag: "div",
@@ -286,20 +418,19 @@ class PlayPage {
                                             tag: "div",
                                             cls: [
                                                 "card-small-suit",
-                                                `card-small-suit_${card.suit}`,
+                                                "card-small-suit_".concat(card.suit),
                                             ],
                                         },
                                     ],
                                 },
                             },
                         ],
-                    })),
+                    }); }),
                 },
             ],
         };
-    }
-
-    static templateCard(card) {
+    };
+    PlayPage.templateCard = function (card) {
         return [
             {
                 tag: "div",
@@ -317,7 +448,7 @@ class PlayPage {
                             tag: "div",
                             cls: [
                                 "card-small-suit",
-                                `card-small-suit_${card.suit}`,
+                                "card-small-suit_".concat(card.suit),
                             ],
                         },
                     ],
@@ -325,7 +456,7 @@ class PlayPage {
             },
             {
                 tag: "div",
-                cls: ["cart-suit", `cart-suit_${card.suit}`],
+                cls: ["cart-suit", "cart-suit_".concat(card.suit)],
             },
             {
                 tag: "div",
@@ -343,84 +474,74 @@ class PlayPage {
                             tag: "div",
                             cls: [
                                 "card-small-suit",
-                                `card-small-suit_${card.suit}`,
+                                "card-small-suit_".concat(card.suit),
                             ],
                         },
                     ],
                 },
             },
         ];
-    }
-}
+    };
+    return PlayPage;
+}());
+exports.PlayPage = PlayPage;
 
 
 /***/ }),
 
-/***/ "./src/js/start.js":
+/***/ "./src/js/start.ts":
 /*!*************************!*\
-  !*** ./src/js/start.js ***!
+  !*** ./src/js/start.ts ***!
   \*************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   StartPage: () => (/* binding */ StartPage)
-/* harmony export */ });
-/* harmony import */ var _lib_template_engine_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../lib/template-engine.js */ "./src/lib/template-engine.js");
-/* harmony import */ var _play_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./play.js */ "./src/js/play.js");
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-
-class StartPage {
-    constructor(element) {
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StartPage = void 0;
+var template_engine_js_1 = __webpack_require__(/*! ../lib/template-engine.js */ "./src/lib/template-engine.js");
+var play_1 = __webpack_require__(/*! ./play */ "./src/js/play.ts");
+var StartPage = /** @class */ (function () {
+    function StartPage(element) {
         if (!(element instanceof HTMLElement)) {
             throw new Error("передана не HTML элемент");
         }
-        window.application.currentPage = "start";
-
+        this.element = element;
+        this.currentPage = "start";
         this.onHendlerClickLevel = this.onHendlerClickLevel.bind(this);
         this.onHendkerClickStart = this.onHendkerClickStart.bind(this);
         this.render();
         this.level = element.querySelector(".card-level-box");
-
         this.buttonChoice = element.querySelector(".card-level-button");
         this.levelItems = element
             .querySelector(".card-level-box")
             .querySelectorAll(".card-level-item");
-
         this.level.addEventListener("click", this.onHendlerClickLevel);
         this.buttonChoice.addEventListener("click", this.onHendkerClickStart);
     }
-
-    render() {
-        const template = StartPage.template();
-        const element = (0,_lib_template_engine_js__WEBPACK_IMPORTED_MODULE_0__.templateEngine)(template);
+    StartPage.prototype.render = function () {
+        var template = StartPage.template();
+        var element = (0, template_engine_js_1.templateEngine)(template);
         this.element.innerHTML = ""; // Очищаем элемент перед рендерингом
         this.element.appendChild(element);
-    }
-
-    onHendkerClickStart() {
+    };
+    StartPage.prototype.onHendkerClickStart = function () {
         this.element.innerHTML = "";
-        window.application.currentPage = "play";
-        new _play_js__WEBPACK_IMPORTED_MODULE_1__.PlayPage(this.element);
-    }
-
-    onHendlerClickLevel(event) {
+        this.currentPage = "play";
+        new play_1.PlayPage(this.element);
+    };
+    StartPage.prototype.onHendlerClickLevel = function (event) {
         if (!event.target.classList.contains("card-level-item")) {
             return;
         }
-
-        this.levelItems.forEach((item) => {
+        this.levelItems.forEach(function (item) {
             item.classList.remove("card-level-item-choice");
         });
-
         event.target.classList.add("card-level-item-choice");
-        const level = event.target.textContent;
+        var level = event.target.textContent;
         localStorage.setItem("level-card-game", level);
         this.buttonChoice.removeAttribute("disabled");
-    }
-
-    static template() {
+    };
+    StartPage.template = function () {
         return {
             tag: "div",
             cls: "card-box",
@@ -447,8 +568,91 @@ class StartPage {
                 },
             ],
         };
+    };
+    return StartPage;
+}());
+exports.StartPage = StartPage;
+
+
+/***/ }),
+
+/***/ "./src/js/win.ts":
+/*!***********************!*\
+  !*** ./src/js/win.ts ***!
+  \***********************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.WinPage = void 0;
+var template_engine_js_1 = __webpack_require__(/*! ../lib/template-engine.js */ "./src/lib/template-engine.js");
+var start_1 = __webpack_require__(/*! ./start */ "./src/js/start.ts");
+var WinPage = /** @class */ (function () {
+    function WinPage(element) {
+        var _this = this;
+        if (!(element instanceof HTMLElement)) {
+            throw new Error("передана не HTML элемент");
+        }
+        this.element = element;
+        this.currentPage = "win";
+        this.render();
+        this.buttonRestart = document.querySelector(".card-celebrate-button");
+        if (this.buttonRestart) {
+            this.buttonRestart.addEventListener("click", function () {
+                _this.onClickButtonRestart();
+            });
+        }
     }
-}
+    WinPage.prototype.onClickButtonRestart = function () {
+        this.element.innerHTML = "";
+        localStorage.removeItem("level-card-game");
+        new start_1.StartPage(this.element);
+    };
+    WinPage.prototype.render = function () {
+        var template = WinPage.template();
+        var element = (0, template_engine_js_1.templateEngine)(template);
+        this.element.innerHTML = "";
+        this.element.appendChild(element);
+    };
+    WinPage.template = function () {
+        return {
+            tag: "div",
+            cls: "card-box",
+            content: [
+                {
+                    tag: "img",
+                    cls: "card-celebrate-img",
+                    attrs: {
+                        alt: "победный смайлик",
+                        src: "../static/сelebrate.svg",
+                    },
+                },
+                {
+                    tag: "h6",
+                    cls: "card-celebrate-text",
+                    content: "Вы выиграли!",
+                },
+                {
+                    tag: "h6",
+                    cls: "card-celebrate-time-text",
+                    content: "Затраченное время:",
+                },
+                {
+                    tag: "div",
+                    cls: "card-timer-watch",
+                    content: "01.20",
+                },
+                {
+                    tag: "div",
+                    cls: "card-celebrate-button",
+                    content: "Играть снова",
+                },
+            ],
+        };
+    };
+    return WinPage;
+}());
+exports.WinPage = WinPage;
 
 
 /***/ }),
@@ -529,7 +733,7 @@ function templateEngine(block) {
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -568,33 +772,26 @@ function templateEngine(block) {
 var __webpack_exports__ = {};
 // This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
 (() => {
+var exports = __webpack_exports__;
 /*!*************************!*\
-  !*** ./src/js/index.js ***!
+  !*** ./src/js/index.ts ***!
   \*************************/
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _play_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./play.js */ "./src/js/play.js");
-/* harmony import */ var _start_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./start.js */ "./src/js/start.js");
-/* harmony import */ var _css_style_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../css/style.css */ "./src/css/style.css");
 
-
-
-
-document.addEventListener("DOMContentLoaded", () => {
-    window.application = {
-        currentPage: null,
-    };
-
-    const appElement = document.querySelector(".app");
-
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var play_1 = __webpack_require__(/*! ./play */ "./src/js/play.ts");
+var start_1 = __webpack_require__(/*! ./start */ "./src/js/start.ts");
+__webpack_require__(/*! ../css/style.css */ "./src/css/style.css");
+document.addEventListener("DOMContentLoaded", function () {
+    var appElement = document.querySelector(".app");
     if (!appElement) {
         console.error("Элемент .app не найден!");
         return;
     }
-
     if (!localStorage.getItem("level-card-game")) {
-        new _start_js__WEBPACK_IMPORTED_MODULE_1__.StartPage(appElement);
-    } else {
-        new _play_js__WEBPACK_IMPORTED_MODULE_0__.PlayPage(appElement);
+        new start_1.StartPage(appElement);
+    }
+    else {
+        new play_1.PlayPage(appElement);
     }
 });
 
