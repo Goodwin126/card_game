@@ -1,10 +1,20 @@
 import { templateEngine } from "../lib/template-engine.js";
 import { StartPage } from "./start";
+import { acquisitionTime } from "./timer";
+
+declare global {
+    interface Window {
+        application: {
+            timer: number | null;
+        };
+    }
+}
 
 export class WinPage {
     private element: HTMLElement;
     private currentPage: string;
     private buttonRestart: HTMLElement | null;
+    private timerResult: number | null;
 
     constructor(element) {
         if (!(element instanceof HTMLElement)) {
@@ -13,6 +23,13 @@ export class WinPage {
         this.element = element;
         this.currentPage = "win";
         this.render();
+        const timerElement = document.querySelector(".card-timer-watch");
+        this.timerResult = window.application.timer;
+        const { minutes, seconds } = acquisitionTime(this.timerResult);
+        if (timerElement) {
+            timerElement.textContent = `${minutes}:${seconds}`;
+        }
+        window.application.timer = null;
 
         this.buttonRestart = document.querySelector(".card-celebrate-button");
         if (this.buttonRestart) {

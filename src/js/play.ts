@@ -2,6 +2,7 @@ import { templateEngine } from "../lib/template-engine.js";
 import { StartPage } from "./start";
 import { LosePage } from "./lose";
 import { WinPage } from "./win";
+import { Timer } from "./timer";
 
 interface Card {
     rank: string | number;
@@ -18,9 +19,7 @@ export class PlayPage {
     private cardsForGame: Card[] = [];
     private buttonRestart: HTMLElement | null;
     private cards: HTMLElement | null;
-    private startTime: number; // Время начала отсчета
-    private elapsedTime: number; // Время начала отсчета
-    private timerId: number;
+    private timer: Timer;
 
     constructor(element) {
         if (!(element instanceof HTMLElement)) {
@@ -28,18 +27,15 @@ export class PlayPage {
         }
         this.element = element;
         this.currentPage = "play";
-
         this.level = localStorage.getItem("level-card-game");
         this.oponCards = [];
         this.deck = this.createDeck();
 
-        this.startTime = 0;
-        this.elapsedTime = 0;
-        this.timerId = undefined;
+        this.timer = new Timer();
 
         setTimeout(() => {
             this.renderCardCover();
-            this.startTimer();
+            this.timer.startTimer();
         }, 5000);
 
         if (!this.element.querySelector(".card-deck")) {
@@ -59,41 +55,6 @@ export class PlayPage {
             this.cards.addEventListener("click", (event) => {
                 this.onClickCard(event);
             });
-        }
-    }
-    startTimer() {
-        if (this.timerId) console.log("ad"); // Если таймер уже запущен, не запускаем повторно
-        this.startTime = Date.now();
-        this.timerId = Number(
-            setInterval(() => {
-                this.updateTimer();
-            }, 1000)
-        );
-    }
-
-    // Остановка таймера
-    stopTimer() {
-        if (this.timerId) {
-            clearInterval(this.timerId);
-            this.timerId = undefined;
-        }
-        this.elapsedTime = 0;
-        this.startTime = 0;
-    }
-
-    // Обновление отображения времени
-    updateTimer() {
-        this.elapsedTime = Date.now() - this.startTime;
-        const seconds = Math.floor(this.elapsedTime / 1000);
-        const minutes = Math.floor(seconds / 60);
-
-        // Форматируем минуты и секунды с ведущими нулями
-        const formattedMinutes = minutes.toString().padStart(2, "0");
-        const formattedSeconds = (seconds % 60).toString().padStart(2, "0");
-
-        const timerElement = document.querySelector(".timer-watch");
-        if (timerElement) {
-            timerElement.textContent = `${formattedMinutes}:${formattedSeconds}`;
         }
     }
 
@@ -129,7 +90,7 @@ export class PlayPage {
                 this.checkGameOver();
                 // Карты совпали
             } else {
-                this.stopTimer(); // останавливаем таймер
+                this.timer.reset();
                 this.element.innerHTML = "";
                 new LosePage(this.element);
             }
@@ -137,7 +98,7 @@ export class PlayPage {
     }
     checkGameOver() {
         if (this.oponCards.length === this.cardsForGame.length) {
-            this.stopTimer(); // останавливаем таймер
+            this.timer.reset();
             this.element.innerHTML = "";
             new WinPage(this.element);
         }
@@ -145,8 +106,8 @@ export class PlayPage {
 
     onClickButtonRestart() {
         //Клик по кнопке "Начать заново"
+        this.timer.reset();
         this.element.innerHTML = "";
-        this.stopTimer(); // останавливаем таймер
         localStorage.removeItem("level-card-game");
         new StartPage(this.element);
     }

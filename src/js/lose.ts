@@ -1,11 +1,20 @@
 import { templateEngine } from "../lib/template-engine.js";
 import { StartPage } from "./start";
+import { acquisitionTime } from "./timer";
+
+declare global {
+    interface Window {
+        application: {
+            timer: number | null;
+        };
+    }
+}
 
 export class LosePage {
-    // Объявляем все свойства класса
     private element: HTMLElement;
     private currentPage: string;
     private buttonRestart: HTMLElement | null;
+    private timerResult: number | null;
 
     constructor(element) {
         if (!(element instanceof HTMLElement)) {
@@ -14,6 +23,13 @@ export class LosePage {
         this.element = element;
         this.currentPage = "lose";
         this.render();
+        const timerElement = document.querySelector(".card-timer-watch");
+        this.timerResult = window.application.timer;
+        const { minutes, seconds } = acquisitionTime(this.timerResult);
+        if (timerElement) {
+            timerElement.textContent = `${minutes}:${seconds}`;
+        }
+        window.application.timer = null;
 
         this.buttonRestart = document.querySelector(".card-celebrate-button");
         if (this.buttonRestart) {
@@ -30,13 +46,13 @@ export class LosePage {
     }
 
     render() {
-        const template = LosePage.template();
+        const template = LosePage.template(this.timerResult);
         const element = templateEngine(template);
         this.element.innerHTML = "";
         this.element.appendChild(element);
     }
 
-    static template() {
+    static template(timeResult) {
         return {
             tag: "div",
             cls: "card-box",
@@ -62,7 +78,7 @@ export class LosePage {
                 {
                     tag: "div",
                     cls: "card-timer-watch",
-                    content: "01.20",
+                    content: timeResult ? timeResult.toString() : "00:00",
                 },
                 {
                     tag: "div",

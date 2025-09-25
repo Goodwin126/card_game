@@ -34,6 +34,8 @@ var LosePage = /** @class */ (function () {
         this.element = element;
         this.currentPage = "lose";
         this.render();
+        this.timerResult = window.application.timer;
+        console.log(this.timerResult);
         this.buttonRestart = document.querySelector(".card-celebrate-button");
         if (this.buttonRestart) {
             this.buttonRestart.addEventListener("click", function () {
@@ -47,12 +49,12 @@ var LosePage = /** @class */ (function () {
         new start_1.StartPage(this.element);
     };
     LosePage.prototype.render = function () {
-        var template = LosePage.template();
+        var template = LosePage.template(this.timerResult);
         var element = (0, template_engine_js_1.templateEngine)(template);
         this.element.innerHTML = "";
         this.element.appendChild(element);
     };
-    LosePage.template = function () {
+    LosePage.template = function (timeResult) {
         return {
             tag: "div",
             cls: "card-box",
@@ -78,7 +80,7 @@ var LosePage = /** @class */ (function () {
                 {
                     tag: "div",
                     cls: "card-timer-watch",
-                    content: "01.20",
+                    content: timeResult ? timeResult.toString() : "00:00",
                 },
                 {
                     tag: "div",
@@ -119,17 +121,13 @@ var template_engine_js_1 = __webpack_require__(/*! ../lib/template-engine.js */ 
 var start_1 = __webpack_require__(/*! ./start */ "./src/js/start.ts");
 var lose_1 = __webpack_require__(/*! ./lose */ "./src/js/lose.ts");
 var win_1 = __webpack_require__(/*! ./win */ "./src/js/win.ts");
+var timer_1 = __webpack_require__(/*! ./timer */ "./src/js/timer.ts");
 var PlayPage = /** @class */ (function () {
     function PlayPage(element) {
         var _this = this;
         this.oponCards = [];
         this.deck = [];
         this.cardsForGame = [];
-        this.timerCardCover = null;
-        this.timerId = null; // ID интервала таймера
-        this.startTime = 0; // Время начала отсчета
-        this.elapsedTime = 0; // Прошедшее время
-        this.timeoutId = null;
         if (!(element instanceof HTMLElement)) {
             throw new Error("передана не HTML элемент");
         }
@@ -138,11 +136,11 @@ var PlayPage = /** @class */ (function () {
         this.level = localStorage.getItem("level-card-game");
         this.oponCards = [];
         this.deck = this.createDeck();
-        // Добавляем очистку при создании нового экземпляра
-        if (this.timerId) {
-            this.stopTimer();
-        }
-        this.startTimer();
+        this.timer = new timer_1.Timer();
+        setTimeout(function () {
+            _this.renderCardCover();
+            _this.timer.startTimer();
+        }, 5000);
         if (!this.element.querySelector(".card-deck")) {
             console.error("Элемент .card-deck не найден!");
             return;
@@ -160,40 +158,6 @@ var PlayPage = /** @class */ (function () {
             });
         }
     }
-    PlayPage.prototype.startTimer = function () {
-        var _this = this;
-        this.startTime = Date.now();
-        this.timerId = Number(setInterval(function () {
-            _this.updateTimer();
-        }, 1000));
-    };
-    // Остановка таймера
-    PlayPage.prototype.stopTimer = function () {
-        if (this.timerId) {
-            clearInterval(this.timerId);
-            this.timerId = null;
-        }
-        clearTimeout(this.timerCardCover);
-        this.timerCardCover = null;
-        this.oponCards = [];
-        this.deck = [];
-        this.cardsForGame = [];
-        this.elapsedTime = 0;
-        this.startTime = 0;
-    };
-    // Обновление отображения времени
-    PlayPage.prototype.updateTimer = function () {
-        this.elapsedTime = Date.now() - this.startTime;
-        var seconds = Math.floor(this.elapsedTime / 1000);
-        var minutes = Math.floor(seconds / 60);
-        // Форматируем минуты и секунды с ведущими нулями
-        var formattedMinutes = minutes.toString().padStart(2, "0");
-        var formattedSeconds = (seconds % 60).toString().padStart(2, "0");
-        var timerElement = document.querySelector(".timer-watch");
-        if (timerElement) {
-            timerElement.textContent = "".concat(formattedMinutes, ":").concat(formattedSeconds);
-        }
-    };
     PlayPage.prototype.onClickCard = function (event) {
         var target = event.target;
         if (target.classList.contains("card-back")) {
@@ -224,7 +188,7 @@ var PlayPage = /** @class */ (function () {
                 // Карты совпали
             }
             else {
-                this.stopTimer(); // останавливаем таймер
+                this.timer.reset();
                 this.element.innerHTML = "";
                 new lose_1.LosePage(this.element);
             }
@@ -232,20 +196,19 @@ var PlayPage = /** @class */ (function () {
     };
     PlayPage.prototype.checkGameOver = function () {
         if (this.oponCards.length === this.cardsForGame.length) {
-            this.stopTimer(); // останавливаем таймер
+            this.timer.reset();
             this.element.innerHTML = "";
             new win_1.WinPage(this.element);
         }
     };
     PlayPage.prototype.onClickButtonRestart = function () {
         //Клик по кнопке "Начать заново"
-        this.stopTimer(); // останавливаем таймер
+        this.timer.reset();
         this.element.innerHTML = "";
         localStorage.removeItem("level-card-game");
         new start_1.StartPage(this.element);
     };
     PlayPage.prototype.createDeck = function () {
-        var _this = this;
         var deck = [];
         var ranks = [6, 7, 8, 9, 10, "J", "Q", "K", "A"];
         var suits = ["clubs", "diamonds", "hearts", "spades"];
@@ -264,11 +227,6 @@ var PlayPage = /** @class */ (function () {
         this.cardsForGame = this.createDuble(deck);
         this.shuffleDeck(this.cardsForGame);
         this.render();
-        if (!this.timerCardCover) {
-            this.timerCardCover = Number(setTimeout(function () {
-                _this.renderCardCover();
-            }, 5000));
-        }
         return deck;
     };
     PlayPage.prototype.selectCardByLevel = function (deck) {
@@ -576,6 +534,96 @@ exports.StartPage = StartPage;
 
 /***/ }),
 
+/***/ "./src/js/timer.ts":
+/*!*************************!*\
+  !*** ./src/js/timer.ts ***!
+  \*************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Timer = void 0;
+var Timer = /** @class */ (function () {
+    function Timer() {
+        this.isRunning = false;
+        this.startTime = 0;
+        this.elapsedTime = 0;
+        this.timerId = null; // Лучший вариант
+        this.startTime = 0;
+        this.elapsedTime = 0;
+        this.timerId = null;
+    }
+    Timer.prototype.startTimer = function () {
+        var _this = this;
+        if (this.isRunning) {
+            console.warn("Таймер уже запущен");
+            return;
+        }
+        this.isRunning = true;
+        this.startTime = Date.now();
+        this.timerId = setInterval(function () {
+            _this.updateTimer();
+        }, 1000);
+    };
+    Timer.prototype.stopTimer = function () {
+        if (this.timerId) {
+            console.log(this.elapsedTime);
+            window.application.timer = Number(this.timerId);
+            clearInterval(this.timerId);
+            this.timerId = undefined;
+            this.elapsedTime = undefined;
+            this.startTime = undefined;
+        }
+    };
+    Timer.prototype.updateTimer = function () {
+        if (!this.timerId)
+            return;
+        this.elapsedTime = Date.now() - this.startTime;
+        var _a = this.acquisitionTime(this.elapsedTime), minutes = _a.minutes, seconds = _a.seconds;
+        var timerElement = document.querySelector(".timer-watch");
+        if (timerElement) {
+            timerElement.textContent = "".concat(minutes, ":").concat(seconds);
+        }
+    };
+    Timer.prototype.acquisitionTime = function (elapsedTime) {
+        var seconds = Math.floor(elapsedTime / 1000);
+        var minutes = Math.floor(seconds / 60);
+        // Форматируем минуты и секунды с ведущими нулями
+        var formattedMinutes = minutes.toString().padStart(2, "0");
+        var formattedSeconds = (seconds % 60).toString().padStart(2, "0");
+        // Возвращаем объект с двумя свойствами
+        return {
+            minutes: formattedMinutes,
+            seconds: formattedSeconds,
+        };
+    };
+    // Дополнительные методы
+    Timer.prototype.reset = function () {
+        this.stopTimer();
+        this.elapsedTime = 0;
+        this.startTime = 0;
+        var timerElement = document.querySelector(".timer-watch");
+        if (timerElement) {
+            timerElement.textContent = "00:00";
+        }
+    };
+    Timer.prototype.getElapsedTime = function () {
+        return this.elapsedTime;
+    };
+    Timer.prototype.getFormattedTime = function () {
+        var seconds = Math.floor(this.elapsedTime / 1000);
+        var minutes = Math.floor(seconds / 60);
+        return "".concat(minutes.toString().padStart(2, "0"), ":").concat((seconds % 60)
+            .toString()
+            .padStart(2, "0"));
+    };
+    return Timer;
+}());
+exports.Timer = Timer;
+
+
+/***/ }),
+
 /***/ "./src/js/win.ts":
 /*!***********************!*\
   !*** ./src/js/win.ts ***!
@@ -781,6 +829,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 var play_1 = __webpack_require__(/*! ./play */ "./src/js/play.ts");
 var start_1 = __webpack_require__(/*! ./start */ "./src/js/start.ts");
 __webpack_require__(/*! ../css/style.css */ "./src/css/style.css");
+// Создаём реальную переменную
+window.application = {
+    timer: null,
+};
 document.addEventListener("DOMContentLoaded", function () {
     var appElement = document.querySelector(".app");
     if (!appElement) {
