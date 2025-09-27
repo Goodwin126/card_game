@@ -1,0 +1,12 @@
+{
+    "compiterootions": {
+        "strict": true, //Включает все жесткие проверки типов
+        "outDir": "./dist/",
+        "nolmplicitAny": true,
+        "module": "es6",
+        "target": "es5",
+        "allows": true,
+        "sourceMap": true,
+        "moduleResolution": "node"
+    }
+}

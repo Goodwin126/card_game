@@ -1,7 +1,14 @@
 import { templateEngine } from "../lib/template-engine.js";
-import { PlayPage } from "./play.js";
+import { PlayPage } from "./play";
 
 export class StartPage {
+    // Объявляем все свойства класса
+    private element: HTMLElement;
+    private currentPage: string;
+    private level: HTMLElement | null;
+    private buttonChoice: HTMLElement | null;
+    private levelItems: NodeListOf<Element>;
+
     constructor(element) {
         if (!(element instanceof HTMLElement)) {
             throw new Error("передана не HTML элемент");
