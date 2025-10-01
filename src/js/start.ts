@@ -1,8 +1,14 @@
 import { templateEngine } from "../lib/template-engine.js";
-import { PlayPage } from "./play.js";
+import { PlayPage } from "./play";
 
 export class StartPage {
-    constructor(element) {
+    private element: HTMLElement;
+    private currentPage: string;
+    private level: HTMLElement;
+    private buttonChoice: HTMLElement | null = null;
+    private levelItems: NodeListOf<Element> | null = null;
+
+    constructor(element: HTMLElement) {
         if (!(element instanceof HTMLElement)) {
             throw new Error("передана не HTML элемент");
         }
@@ -12,15 +18,21 @@ export class StartPage {
         this.onHendlerClickLevel = this.onHendlerClickLevel.bind(this);
         this.onHendkerClickStart = this.onHendkerClickStart.bind(this);
         this.render();
-        this.level = element.querySelector(".card-level-box");
+        this.level = this.element.querySelector(".card-level-box")!;
 
-        this.buttonChoice = element.querySelector(".card-level-button");
-        this.levelItems = element
-            .querySelector(".card-level-box")
-            .querySelectorAll(".card-level-item");
+        this.buttonChoice = this.element.querySelector(".card-level-button");
+        this.levelItems =
+            this.element
+                .querySelector(".card-level-box")
+                ?.querySelectorAll(".card-level-item") || null;
 
         this.level.addEventListener("click", this.onHendlerClickLevel);
-        this.buttonChoice.addEventListener("click", this.onHendkerClickStart);
+        if (this.buttonChoice) {
+            this.buttonChoice.addEventListener(
+                "click",
+                this.onHendkerClickStart
+            );
+        }
     }
 
     render() {
@@ -36,19 +48,23 @@ export class StartPage {
         new PlayPage(this.element);
     }
 
-    onHendlerClickLevel(event) {
-        if (!event.target.classList.contains("card-level-item")) {
+    onHendlerClickLevel(event: Event) {
+        const target = event.target as HTMLElement;
+        if (!target.classList.contains("card-level-item")) {
             return;
         }
+        if (this.levelItems) {
+            this.levelItems.forEach((item) => {
+                item.classList.remove("card-level-item-choice");
+            });
+        }
 
-        this.levelItems.forEach((item) => {
-            item.classList.remove("card-level-item-choice");
-        });
-
-        event.target.classList.add("card-level-item-choice");
-        const level = event.target.textContent;
+        target.classList.add("card-level-item-choice");
+        const level = target.textContent;
         localStorage.setItem("level-card-game", level);
-        this.buttonChoice.removeAttribute("disabled");
+        if (this.buttonChoice) {
+            this.buttonChoice.removeAttribute("disabled");
+        }
     }
 
     static template() {
