@@ -1,13 +1,27 @@
 import { templateEngine } from "../lib/template-engine.js";
-import { StartPage } from "./start.js";
+import { StartPage } from "./start";
+import { LosePage } from "./lose";
+import { WinPage } from "./win";
+import { Timer } from "./timer";
 
 export class PlayPage {
-    constructor(element) {
+    private element: HTMLElement;
+    private currentPage: string;
+    private timer: Timer;
+    private level: string | null;
+    private oponCards: number[] = [];
+    private deck: { rank: string | number; suit: string }[] = [];
+    private cardsForGame: { rank: string | number; suit: string }[] = [];
+    private buttonRestart: HTMLElement | null = null;
+    private cards: HTMLElement | null = null;
+
+    constructor(element: HTMLElement) {
         if (!(element instanceof HTMLElement)) {
             throw new Error("передана не HTML элемент");
         }
         this.element = element;
         this.currentPage = "play";
+        this.timer = new Timer();
 
         this.level = localStorage.getItem("level-card-game");
         this.oponCards = [];
@@ -19,27 +33,38 @@ export class PlayPage {
         }
 
         this.buttonRestart = document.querySelector(".btn-restart");
-        this.buttonRestart.addEventListener("click", () => {
-            this.onClickButtonRestart();
-        });
+        if (this.buttonRestart) {
+            this.buttonRestart.addEventListener("click", () => {
+                this.onClickButtonRestart();
+            });
+        }
 
         this.cards = document.querySelector(".card-deck");
-        this.cards.addEventListener("click", (event) => {
-            this.onClickCard(event);
-        });
+        if (this.cards) {
+            this.cards.addEventListener("click", (event) => {
+                this.onClickCard(event);
+            });
+        }
     }
 
-    onClickCard(event) {
+    onClickCard(event: MouseEvent) {
+        const target = event.target as HTMLElement;
         // Обработчик клика по карте
-        if (event.target.classList.contains("card-back")) {
-            const index = event.target.dataset.index;
-            if (!this.oponCards.includes(index)) {
-                this.oponCards.push(index);
+        if (target.classList.contains("card-back")) {
+            const indexStr = target.dataset.index;
+            if (indexStr && !isNaN(Number(indexStr))) {
+                const index = Number(indexStr);
 
-                const card = this.cardsForGame[index];
+                // Проверяем, что индекс не уже в массиве
+                if (!this.oponCards.includes(index)) {
+                    this.oponCards.push(index);
 
-                this.renderCardOne(event.target, card);
-                this.checkCardsMatch();
+                    // Проверяем существование карты
+                    if (this.cardsForGame[index]) {
+                        this.renderCardOne(target, this.cardsForGame[index]);
+                        this.checkCardsMatch();
+                    }
+                }
             }
         }
     }
@@ -56,33 +81,42 @@ export class PlayPage {
                 this.checkGameOver();
                 // Карты совпали
             } else {
-                // Перевернуть карты обратно
-                alert("Вы проиграли!");
+                this.timer.reset();
+                Timer.globalReset();
+                new LosePage(this.element);
             }
         }
     }
     checkGameOver() {
         if (this.oponCards.length === this.cardsForGame.length) {
-            alert("Поздравляем! Вы выиграли!");
-            this.element.innerHTML = "";
-            new StartPage(this.element);
+            this.timer.reset();
+            Timer.globalReset();
+            new WinPage(this.element);
         }
     }
 
     onClickButtonRestart() {
-        //Клик по кнопке "Начать заново"
-        this.element.innerHTML = "";
+        this.timer.reset();
+        Timer.globalReset();
         localStorage.removeItem("level-card-game");
+        if (this.buttonRestart) {
+            this.buttonRestart.removeEventListener(
+                "click",
+                this.onClickButtonRestart
+            );
+        }
+        if (this.cards) {
+            this.cards.removeEventListener("click", this.onClickCard);
+        }
         new StartPage(this.element);
     }
 
-    createDeck() {
-        // Функция создания колоды карт
-        let deck = [];
+    createDeck(): { rank: string | number; suit: string }[] {
+        let deck: { rank: string | number; suit: string }[] = [];
+
         const ranks = [6, 7, 8, 9, 10, "J", "Q", "K", "A"];
         const suits = ["clubs", "diamonds", "hearts", "spades"];
 
-        //создаем калоду
         for (const suit of suits) {
             for (const rank of ranks) {
                 deck.push({
@@ -91,23 +125,26 @@ export class PlayPage {
                 });
             }
         }
-        //перемешиваем калоду
+
         this.shuffleDeck(deck);
-        //выбираем карты исходя из уровня сложности
+
         this.selectCardByLevel(deck);
-        //создаём дубли
+
         this.cardsForGame = this.createDuble(deck);
-        //перемешивает полученные карты
+
         this.shuffleDeck(this.cardsForGame);
-        this.cards = this.cardsForGame;
-        //отрисовываем карты
+
         this.render();
+
         setTimeout(() => {
             this.renderCardCover();
+            this.timer.startTimer();
         }, 5000);
+
+        return deck;
     }
 
-    selectCardByLevel(deck) {
+    selectCardByLevel(deck: { rank: string | number; suit: string }[]): void {
         const level = this.level;
         switch (level) {
             case "1":
@@ -122,9 +159,11 @@ export class PlayPage {
         }
     }
 
-    createDuble(cards) {
+    createDuble(
+        cards: { rank: string | number; suit: string }[]
+    ): { rank: string | number; suit: string }[] {
         // Функция создания дублей
-        const cardsForGame = [];
+        const cardsForGame: { rank: string | number; suit: string }[] = [];
         cards.forEach((card) => {
             cardsForGame.push(card);
             cardsForGame.push({ ...card });
@@ -136,14 +175,15 @@ export class PlayPage {
         // Функция отрисовки одной карты
         const cards = this.element.querySelectorAll(".card");
         cards.forEach((card, index) => {
-            card.innerHTML = "";
-            card.classList.add("card-back");
-            card.dataset.index = index;
+            const htmlCard = card as HTMLElement;
+            htmlCard.innerHTML = "";
+            htmlCard.classList.add("card-back");
+            htmlCard.dataset.index = index.toString(); // Преобразуем индекс в строку
         });
         return cards;
     }
 
-    shuffleDeck(deck) {
+    shuffleDeck(deck: { rank: string | number; suit: string }[]): void {
         // Функция перемешивания колоды
         for (let i = deck.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -151,7 +191,10 @@ export class PlayPage {
         }
     }
 
-    renderCardOne(elementTarget, card) {
+    renderCardOne(
+        elementTarget: HTMLElement,
+        card: { rank: string | number; suit: string }
+    ) {
         // Функция отрисовки рубашек карты
         const template = PlayPage.templateCard(card);
         const element = templateEngine(template);
@@ -166,7 +209,7 @@ export class PlayPage {
         this.element.appendChild(element);
     }
 
-    static template(deck) {
+    static template(deck: { rank: string | number; suit: string }[]): any {
         return {
             tag: "div",
             cls: "cards",
@@ -271,7 +314,7 @@ export class PlayPage {
         };
     }
 
-    static templateCard(card) {
+    static templateCard(card: { rank: string | number; suit: string }): any[] {
         return [
             {
                 tag: "div",

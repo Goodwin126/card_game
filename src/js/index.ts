@@ -1,9 +1,9 @@
-import { PlayPage } from "./play.js";
-import { StartPage } from "./start.js";
+import { PlayPage } from "./play";
+import { StartPage } from "./start";
 import "../css/style.css";
 
 document.addEventListener("DOMContentLoaded", () => {
-    const appElement = document.querySelector(".app");
+    const appElement = document.querySelector(".app") as HTMLElement;
 
     if (!appElement) {
         console.error("Элемент .app не найден!");
