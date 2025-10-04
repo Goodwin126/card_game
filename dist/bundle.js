@@ -33,7 +33,6 @@ __webpack_require__.r(__webpack_exports__);
 var LosePage = /** @class */ (function () {
     function LosePage(element) {
         var _this = this;
-        var _a;
         this.timerResult = null;
         this.buttonRestart = null;
         if (!(element instanceof HTMLElement)) {
@@ -43,11 +42,12 @@ var LosePage = /** @class */ (function () {
         this.currentPage = "lose";
         this.timer = new _timer__WEBPACK_IMPORTED_MODULE_2__.Timer();
         this.render();
-        this.timerResult = (_a = window.application.timer) !== null && _a !== void 0 ? _a : null;
+        this.timerResult = Number(localStorage.getItem("timer"));
         var displayElement = document.querySelector(".card-timer-watch");
         if (displayElement && this.timerResult !== null) {
             this.timer.updateDisplay(displayElement, this.timerResult);
         }
+        localStorage.removeItem("timer");
         this.buttonRestart = document.querySelector(".card-celebrate-button");
         if (this.buttonRestart) {
             this.buttonRestart.addEventListener("click", function () {
@@ -624,14 +624,14 @@ var Timer = /** @class */ (function () {
     Timer.prototype.timeConverter = function (timer) {
         var minutes = Math.floor(timer / 60000);
         var seconds = Math.floor((timer % 60000) / 1000);
-        return [minutes, seconds]; // Возвращаем массив
+        return [minutes, seconds];
     };
     Timer.prototype.stopTimer = function () {
+        localStorage.setItem("timer", this.elapsedTime.toString());
         if (this.timerId) {
             clearInterval(this.timerId);
             this.timerId = null;
         }
-        window.application.timer = Number(this.elapsedTime);
         this.isRunning = false;
     };
     Timer.prototype.reset = function () {
@@ -673,7 +673,6 @@ __webpack_require__.r(__webpack_exports__);
 var WinPage = /** @class */ (function () {
     function WinPage(element) {
         var _this = this;
-        var _a;
         this.timerResult = null;
         this.buttonRestart = null;
         if (!(element instanceof HTMLElement)) {
@@ -683,11 +682,12 @@ var WinPage = /** @class */ (function () {
         this.currentPage = "lose";
         this.timer = new _timer__WEBPACK_IMPORTED_MODULE_2__.Timer();
         this.render();
-        this.timerResult = (_a = window.application.timer) !== null && _a !== void 0 ? _a : null;
+        this.timerResult = Number(localStorage.getItem("timer"));
         var displayElement = document.querySelector(".card-timer-watch");
         if (displayElement && this.timerResult !== null) {
             this.timer.updateDisplay(displayElement, this.timerResult);
         }
+        localStorage.removeItem("timer");
         this.buttonRestart = document.querySelector(".card-celebrate-button");
         if (this.buttonRestart) {
             this.buttonRestart.addEventListener("click", function () {
