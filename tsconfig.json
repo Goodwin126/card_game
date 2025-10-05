@@ -1,11 +1,19 @@
 {
-  "compilerOptions": {
-    "strict": true,
-    "outDir": "./dist/",
-    "noImplicitAny": true,
-    "module": "es6",
-    "target": "es5",
-    "allowJs": true,
-    "moduleResolution": "node"
-  }
+    "compilerOptions": {
+        "strict": true,
+        "lib": ["dom", "dom.iterable", "esnext"],
+        "outDir": "./dist/",
+        "noImplicitAny": true,
+        "module": "esnext",
+        "target": "es2017", // Изменили на es2017
+        "allowJs": true,
+        "moduleResolution": "node",
+        "esModuleInterop": true, // Добавили для лучшей совместимости с ES6 модулями
+        "allowSyntheticDefaultImports": true,
+        "noFallthroughCasesInSwitch": true,
+        "skipLibCheck": true, // Добавили для ускорения компиляции
+        "forceConsistentCasingInFileNames": true, // Добавили для предотвращения ошибок с регистром
+        "types": ["node"]
+    },
+    "exclude": ["node_modules", "**/*.spec.ts", "**/*.test.ts"]
 }
