@@ -2,20 +2,22 @@ const { Timer } = require("./src/js/timer.ts");
 
 let timer;
 
-let localStorageMock;
-
 describe("Timer - pure methods", () => {
     beforeEach(() => {
         // Создаем новый экземпляр таймера перед каждым тестом
         timer = new Timer();
 
-        // Создаем мок для localStorage
-        localStorageMock = {
+        const createMockStorage = () => ({
             setItem: jest.fn(),
-        };
+            getItem: jest.fn(),
+            removeItem: jest.fn(),
+            clear: jest.fn(),
+        });
 
-        // Подменяем оригинальный localStorage нашим моком
-        global.localStorage = localStorageMock;
+        Object.defineProperty(window, "localStorage", {
+            value: createMockStorage(),
+            writable: true,
+        });
 
         // Мокаем document для тестов
         document.body.innerHTML = `<div class="timer-watch"></div>`;
@@ -78,7 +80,7 @@ describe("Timer - pure methods", () => {
             expect(timer.timerId).toBeNull();
 
             // Проверяем, что значение сохранено правильно
-            expect(localStorageMock.setItem).toHaveBeenCalledWith(
+            expect(window.localStorage.setItem).toHaveBeenCalledWith(
                 "timer",
                 timer.elapsedTime.toString()
             );
