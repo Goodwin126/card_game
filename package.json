@@ -4,7 +4,7 @@
     "description": "This card game is quite simple: you need to choose all the pairs of cards.",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "jest",
         "build": "NODE_ENV=production webpack",
         "start": "webpack-dev-server -open"
     },
@@ -19,6 +19,7 @@
     },
     "homepage": "https://github.com/Goodwin126/card_game#readme",
     "devDependencies": {
+        "@types/jest": "^30.0.0",
         "axios": "1.12.1",
         "copy-webpack-plugin": "^13.0.1",
         "css-loader": "^7.1.2",
@@ -27,12 +28,16 @@
         "eslint-config-prettier": "8.5.0",
         "eslint-plugin-prettier": "4.0.0",
         "html-webpack-plugin": "^5.6.4",
+        "jest": "^30.2.0",
+        "jest-environment-jsdom": "^30.2.0",
+        "jsdom": "^27.0.0",
         "mini-css-extract-plugin": "^2.9.4",
         "prettier": "2.6.2",
         "style-loader": "^4.0.0",
         "stylelint": "16.24.0",
+        "ts-jest": "^29.4.4",
         "ts-loader": "^9.5.4",
-        "typescript": "^5.9.2",
+        "typescript": "^5.9.3",
         "webpack": "^5.101.3",
         "webpack-cli": "^6.0.1",
         "webpack-dev-server": "^5.2.2"
