@@ -1,10 +1,9 @@
-import { templateEngine } from "../lib/template-engine.js";
+import { templateEngine } from "../lib/template-engine";
 import { StartPage } from "./start";
 import { Timer } from "./timer";
 
 export class WinPage {
     private element: HTMLElement;
-    private currentPage: string;
     private timer: Timer;
     private timerResult: number | null = null;
     private buttonRestart: HTMLElement | null = null;
@@ -15,7 +14,6 @@ export class WinPage {
         }
 
         this.element = element;
-        this.currentPage = "lose";
         this.timer = new Timer();
 
         this.render();
