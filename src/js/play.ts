@@ -1,12 +1,27 @@
-import { templateEngine } from "../lib/template-engine.js";
+import { templateEngine } from "../lib/template-engine";
 import { StartPage } from "./start";
 import { LosePage } from "./lose";
 import { WinPage } from "./win";
 import { Timer } from "./timer";
 
+type Card = { rank: string | number; suit: string };
+
+export type TemplateBlock =
+    | string
+    | number
+    | boolean
+    | TemplateNode
+    | TemplateNode[];
+
+interface TemplateNode {
+    tag: string;
+    cls?: string | string[];
+    attrs?: Record<string, string | boolean>;
+    content?: TemplateBlock;
+}
+
 export class PlayPage {
     private element: HTMLElement;
-    private currentPage: string;
     private timer: Timer;
     private level: string | null;
     private oponCards: number[] = [];
@@ -20,7 +35,6 @@ export class PlayPage {
             throw new Error("передана не HTML элемент");
         }
         this.element = element;
-        this.currentPage = "play";
         this.timer = new Timer();
 
         this.level = localStorage.getItem("level-card-game");
@@ -184,7 +198,6 @@ export class PlayPage {
     }
 
     shuffleDeck(deck: { rank: string | number; suit: string }[]): void {
-        // Функция перемешивания колоды
         for (let i = deck.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [deck[i], deck[j]] = [deck[j], deck[i]];
@@ -195,11 +208,15 @@ export class PlayPage {
         elementTarget: HTMLElement,
         card: { rank: string | number; suit: string }
     ) {
-        // Функция отрисовки рубашек карты
-        const template = PlayPage.templateCard(card);
-        const element = templateEngine(template);
-        elementTarget.classList.remove("card-back");
-        elementTarget.appendChild(element);
+        // Получаем массив шаблонов
+        const templates = PlayPage.templateCard(card);
+
+        // Теперь нужно обработать каждый шаблон отдельно
+        templates.forEach((template) => {
+            const element = templateEngine(template);
+            elementTarget.classList.remove("card-back");
+            elementTarget.appendChild(element);
+        });
     }
 
     render() {
@@ -209,7 +226,9 @@ export class PlayPage {
         this.element.appendChild(element);
     }
 
-    static template(deck: { rank: string | number; suit: string }[]): any {
+    static template(
+        deck: { rank: string | number; suit: string }[]
+    ): TemplateBlock {
         return {
             tag: "div",
             cls: "cards",
@@ -314,7 +333,10 @@ export class PlayPage {
         };
     }
 
-    static templateCard(card: { rank: string | number; suit: string }): any[] {
+    static templateCard(card: {
+        rank: string | number;
+        suit: string;
+    }): TemplateBlock[] {
         return [
             {
                 tag: "div",
