@@ -18,14 +18,18 @@ __webpack_require__.r(__webpack_exports__);
 /*!************************!*\
   !*** ./src/js/lose.ts ***!
   \************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   LosePage: () => (/* binding */ LosePage)
+/* harmony export */ });
+/* harmony import */ var _lib_template_engine__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../lib/template-engine */ "./src/lib/template-engine.ts");
+/* harmony import */ var _start__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./start */ "./src/js/start.ts");
+/* harmony import */ var _timer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./timer */ "./src/js/timer.ts");
 
 
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LosePage = void 0;
-const template_engine_js_1 = __webpack_require__(/*! ../lib/template-engine.js */ "./src/lib/template-engine.js");
-const start_1 = __webpack_require__(/*! ./start */ "./src/js/start.ts");
-const timer_1 = __webpack_require__(/*! ./timer */ "./src/js/timer.ts");
+
 class LosePage {
     constructor(element) {
         this.timerResult = null;
@@ -34,8 +38,7 @@ class LosePage {
             throw new Error("передана не HTML элемент");
         }
         this.element = element;
-        this.currentPage = "lose";
-        this.timer = new timer_1.Timer();
+        this.timer = new _timer__WEBPACK_IMPORTED_MODULE_2__.Timer();
         this.render();
         this.timerResult = Number(localStorage.getItem("timer"));
         const displayElement = document.querySelector(".card-timer-watch");
@@ -53,11 +56,11 @@ class LosePage {
     onClickButtonRestart() {
         this.element.innerHTML = "";
         localStorage.removeItem("level-card-game");
-        new start_1.StartPage(this.element);
+        new _start__WEBPACK_IMPORTED_MODULE_1__.StartPage(this.element);
     }
     render() {
         const template = LosePage.template();
-        const element = (0, template_engine_js_1.templateEngine)(template);
+        const element = (0,_lib_template_engine__WEBPACK_IMPORTED_MODULE_0__.templateEngine)(template);
         // Очищаем элемент перед добавлением нового контента
         this.element.innerHTML = "";
         this.element.appendChild(element);
@@ -99,7 +102,6 @@ class LosePage {
         };
     }
 }
-exports.LosePage = LosePage;
 
 
 /***/ }),
@@ -108,16 +110,22 @@ exports.LosePage = LosePage;
 /*!************************!*\
   !*** ./src/js/play.ts ***!
   \************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   PlayPage: () => (/* binding */ PlayPage)
+/* harmony export */ });
+/* harmony import */ var _lib_template_engine__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../lib/template-engine */ "./src/lib/template-engine.ts");
+/* harmony import */ var _start__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./start */ "./src/js/start.ts");
+/* harmony import */ var _lose__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./lose */ "./src/js/lose.ts");
+/* harmony import */ var _win__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./win */ "./src/js/win.ts");
+/* harmony import */ var _timer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./timer */ "./src/js/timer.ts");
 
 
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PlayPage = void 0;
-const template_engine_js_1 = __webpack_require__(/*! ../lib/template-engine.js */ "./src/lib/template-engine.js");
-const start_1 = __webpack_require__(/*! ./start */ "./src/js/start.ts");
-const lose_1 = __webpack_require__(/*! ./lose */ "./src/js/lose.ts");
-const win_1 = __webpack_require__(/*! ./win */ "./src/js/win.ts");
-const timer_1 = __webpack_require__(/*! ./timer */ "./src/js/timer.ts");
+
+
+
 class PlayPage {
     constructor(element) {
         this.oponCards = [];
@@ -129,8 +137,7 @@ class PlayPage {
             throw new Error("передана не HTML элемент");
         }
         this.element = element;
-        this.currentPage = "play";
-        this.timer = new timer_1.Timer();
+        this.timer = new _timer__WEBPACK_IMPORTED_MODULE_4__.Timer();
         this.level = localStorage.getItem("level-card-game");
         this.oponCards = [];
         this.deck = this.createDeck();
@@ -183,21 +190,21 @@ class PlayPage {
             }
             else {
                 this.timer.reset();
-                timer_1.Timer.globalReset();
-                new lose_1.LosePage(this.element);
+                _timer__WEBPACK_IMPORTED_MODULE_4__.Timer.globalReset();
+                new _lose__WEBPACK_IMPORTED_MODULE_2__.LosePage(this.element);
             }
         }
     }
     checkGameOver() {
         if (this.oponCards.length === this.cardsForGame.length) {
             this.timer.reset();
-            timer_1.Timer.globalReset();
-            new win_1.WinPage(this.element);
+            _timer__WEBPACK_IMPORTED_MODULE_4__.Timer.globalReset();
+            new _win__WEBPACK_IMPORTED_MODULE_3__.WinPage(this.element);
         }
     }
     onClickButtonRestart() {
         this.timer.reset();
-        timer_1.Timer.globalReset();
+        _timer__WEBPACK_IMPORTED_MODULE_4__.Timer.globalReset();
         localStorage.removeItem("level-card-game");
         if (this.buttonRestart) {
             this.buttonRestart.removeEventListener("click", this.onClickButtonRestart);
@@ -205,7 +212,7 @@ class PlayPage {
         if (this.cards) {
             this.cards.removeEventListener("click", this.onClickCard);
         }
-        new start_1.StartPage(this.element);
+        new _start__WEBPACK_IMPORTED_MODULE_1__.StartPage(this.element);
     }
     createDeck() {
         let deck = [];
@@ -265,22 +272,24 @@ class PlayPage {
         return cards;
     }
     shuffleDeck(deck) {
-        // Функция перемешивания колоды
         for (let i = deck.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [deck[i], deck[j]] = [deck[j], deck[i]];
         }
     }
     renderCardOne(elementTarget, card) {
-        // Функция отрисовки рубашек карты
-        const template = PlayPage.templateCard(card);
-        const element = (0, template_engine_js_1.templateEngine)(template);
-        elementTarget.classList.remove("card-back");
-        elementTarget.appendChild(element);
+        // Получаем массив шаблонов
+        const templates = PlayPage.templateCard(card);
+        // Теперь нужно обработать каждый шаблон отдельно
+        templates.forEach((template) => {
+            const element = (0,_lib_template_engine__WEBPACK_IMPORTED_MODULE_0__.templateEngine)(template);
+            elementTarget.classList.remove("card-back");
+            elementTarget.appendChild(element);
+        });
     }
     render() {
         const template = PlayPage.template(this.cardsForGame);
-        const element = (0, template_engine_js_1.templateEngine)(template);
+        const element = (0,_lib_template_engine__WEBPACK_IMPORTED_MODULE_0__.templateEngine)(template);
         this.element.innerHTML = "";
         this.element.appendChild(element);
     }
@@ -441,7 +450,6 @@ class PlayPage {
         ];
     }
 }
-exports.PlayPage = PlayPage;
 
 
 /***/ }),
@@ -450,13 +458,16 @@ exports.PlayPage = PlayPage;
 /*!*************************!*\
   !*** ./src/js/start.ts ***!
   \*************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   StartPage: () => (/* binding */ StartPage)
+/* harmony export */ });
+/* harmony import */ var _lib_template_engine__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../lib/template-engine */ "./src/lib/template-engine.ts");
+/* harmony import */ var _play__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./play */ "./src/js/play.ts");
 
 
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StartPage = void 0;
-const template_engine_js_1 = __webpack_require__(/*! ../lib/template-engine.js */ "./src/lib/template-engine.js");
-const play_1 = __webpack_require__(/*! ./play */ "./src/js/play.ts");
 class StartPage {
     constructor(element) {
         var _a;
@@ -466,7 +477,6 @@ class StartPage {
             throw new Error("передана не HTML элемент");
         }
         this.element = element;
-        this.currentPage = "start";
         this.onHendlerClickLevel = this.onHendlerClickLevel.bind(this);
         this.onHendkerClickStart = this.onHendkerClickStart.bind(this);
         this.render();
@@ -482,14 +492,13 @@ class StartPage {
     }
     render() {
         const template = StartPage.template();
-        const element = (0, template_engine_js_1.templateEngine)(template);
+        const element = (0,_lib_template_engine__WEBPACK_IMPORTED_MODULE_0__.templateEngine)(template);
         this.element.innerHTML = ""; // Очищаем элемент перед рендерингом
         this.element.appendChild(element);
     }
     onHendkerClickStart() {
         this.element.innerHTML = "";
-        this.currentPage = "play";
-        new play_1.PlayPage(this.element);
+        new _play__WEBPACK_IMPORTED_MODULE_1__.PlayPage(this.element);
     }
     onHendlerClickLevel(event) {
         const target = event.target;
@@ -537,7 +546,6 @@ class StartPage {
         };
     }
 }
-exports.StartPage = StartPage;
 
 
 /***/ }),
@@ -546,11 +554,12 @@ exports.StartPage = StartPage;
 /*!*************************!*\
   !*** ./src/js/timer.ts ***!
   \*************************/
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Timer = void 0;
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Timer: () => (/* binding */ Timer)
+/* harmony export */ });
 class Timer {
     constructor() {
         this.timerId = null;
@@ -560,18 +569,22 @@ class Timer {
     }
     startTimer() {
         if (!this.isRunning) {
-            console.log("start!");
             this.startTime = Date.now();
             this.elapsedTime = 0;
-            this.timerId = Number(setInterval(() => this.updateTimer(), 1000));
+            this.timerId = setInterval(() => this.updateTimer(), 1000);
             this.isRunning = true;
         }
     }
     updateTimer() {
         const displayElement = document.querySelector(".timer-watch");
         if (this.isRunning && displayElement) {
-            this.elapsedTime = Date.now() - this.startTime;
-            this.updateDisplay(displayElement, this.elapsedTime);
+            try {
+                this.elapsedTime = Date.now() - this.startTime;
+                this.updateDisplay(displayElement, this.elapsedTime);
+            }
+            catch (error) {
+                console.error("Ошибка обновления таймера:", error);
+            }
         }
     }
     updateDisplay(element, countTime) {
@@ -580,11 +593,9 @@ class Timer {
             return;
         }
         const [minutes, seconds] = this.timeConverter(countTime);
-        if (element) {
-            element.textContent = `${minutes
-                .toString()
-                .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-        }
+        element.textContent = `${minutes.toString().padStart(2, "0")}:${seconds
+            .toString()
+            .padStart(2, "0")}`;
     }
     timeConverter(timer) {
         const minutes = Math.floor(timer / 60000);
@@ -592,8 +603,9 @@ class Timer {
         return [minutes, seconds];
     }
     stopTimer() {
-        localStorage.setItem("timer", this.elapsedTime.toString());
-        if (this.timerId) {
+        const savedValue = this.elapsedTime.toString();
+        localStorage.setItem("timer", savedValue);
+        if (this.timerId !== null) {
             clearInterval(this.timerId);
             this.timerId = null;
         }
@@ -603,17 +615,13 @@ class Timer {
         this.stopTimer();
         this.elapsedTime = 0;
     }
-    // Статический метод для глобального сброса всех таймеров
     static globalReset() {
-        console.log("Глобальный сброс таймера");
-        // Сбрасываем отображение таймера
         const timerElement = document.querySelector(".timer-watch");
         if (timerElement) {
             timerElement.textContent = "00:00";
         }
     }
 }
-exports.Timer = Timer;
 
 
 /***/ }),
@@ -622,14 +630,18 @@ exports.Timer = Timer;
 /*!***********************!*\
   !*** ./src/js/win.ts ***!
   \***********************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   WinPage: () => (/* binding */ WinPage)
+/* harmony export */ });
+/* harmony import */ var _lib_template_engine__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../lib/template-engine */ "./src/lib/template-engine.ts");
+/* harmony import */ var _start__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./start */ "./src/js/start.ts");
+/* harmony import */ var _timer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./timer */ "./src/js/timer.ts");
 
 
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.WinPage = void 0;
-const template_engine_js_1 = __webpack_require__(/*! ../lib/template-engine.js */ "./src/lib/template-engine.js");
-const start_1 = __webpack_require__(/*! ./start */ "./src/js/start.ts");
-const timer_1 = __webpack_require__(/*! ./timer */ "./src/js/timer.ts");
+
 class WinPage {
     constructor(element) {
         this.timerResult = null;
@@ -638,8 +650,7 @@ class WinPage {
             throw new Error("передана не HTML элемент");
         }
         this.element = element;
-        this.currentPage = "lose";
-        this.timer = new timer_1.Timer();
+        this.timer = new _timer__WEBPACK_IMPORTED_MODULE_2__.Timer();
         this.render();
         this.timerResult = Number(localStorage.getItem("timer"));
         const displayElement = document.querySelector(".card-timer-watch");
@@ -657,11 +668,11 @@ class WinPage {
     onClickButtonRestart() {
         this.element.innerHTML = "";
         localStorage.removeItem("level-card-game");
-        new start_1.StartPage(this.element);
+        new _start__WEBPACK_IMPORTED_MODULE_1__.StartPage(this.element);
     }
     render() {
         const template = WinPage.template();
-        const element = (0, template_engine_js_1.templateEngine)(template);
+        const element = (0,_lib_template_engine__WEBPACK_IMPORTED_MODULE_0__.templateEngine)(template);
         // Очищаем элемент перед добавлением нового контента
         this.element.innerHTML = "";
         this.element.appendChild(element);
@@ -703,14 +714,13 @@ class WinPage {
         };
     }
 }
-exports.WinPage = WinPage;
 
 
 /***/ }),
 
-/***/ "./src/lib/template-engine.js":
+/***/ "./src/lib/template-engine.ts":
 /*!************************************!*\
-  !*** ./src/lib/template-engine.js ***!
+  !*** ./src/lib/template-engine.ts ***!
   \************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -722,42 +732,44 @@ function templateEngine(block) {
     if (block === undefined || block === null || block === false) {
         return document.createTextNode("");
     }
-    if (
-        typeof block === "string" ||
+    if (typeof block === "string" ||
         typeof block === "number" ||
-        block === true
-    ) {
-        return document.createTextNode(block);
+        block === true) {
+        return document.createTextNode(String(block));
     }
     if (Array.isArray(block)) {
         const fragment = document.createDocumentFragment();
-
         block.forEach((element) => {
             fragment.appendChild(templateEngine(element));
         });
-
         return fragment;
     }
-
     const result = document.createElement(block.tag);
-
     if (block.cls) {
-        const classes = [].concat(block.cls);
+        // Преобразуем cls в массив, если это не массив
+        const classes = typeof block.cls === "string" ? [block.cls] : block.cls;
         classes.forEach((cls) => {
             result.classList.add(cls);
         });
     }
-
-    if (block.attrs) {
+    function hasAttrs(block) {
+        return block.attrs !== undefined;
+    }
+    if (hasAttrs(block)) {
         const keys = Object.keys(block.attrs);
-
         keys.forEach((key) => {
-            result.setAttribute(key, block.attrs[key]);
+            const value = block.attrs[key];
+            if (typeof value === "string") {
+                result.setAttribute(key, value);
+            }
+            else if (value === true) {
+                result.setAttribute(key, "");
+            }
         });
     }
-
-    result.appendChild(templateEngine(block.content));
-
+    if (block.content !== undefined) {
+        result.appendChild(templateEngine(block.content));
+    }
     return result;
 }
 
@@ -823,15 +835,16 @@ function templateEngine(block) {
 var __webpack_exports__ = {};
 // This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
 (() => {
-var exports = __webpack_exports__;
 /*!*************************!*\
   !*** ./src/js/index.ts ***!
   \*************************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _play__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./play */ "./src/js/play.ts");
+/* harmony import */ var _start__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./start */ "./src/js/start.ts");
+/* harmony import */ var _css_style_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../css/style.css */ "./src/css/style.css");
 
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const play_1 = __webpack_require__(/*! ./play */ "./src/js/play.ts");
-const start_1 = __webpack_require__(/*! ./start */ "./src/js/start.ts");
-__webpack_require__(/*! ../css/style.css */ "./src/css/style.css");
+
+
 document.addEventListener("DOMContentLoaded", () => {
     const appElement = document.querySelector(".app");
     if (!appElement) {
@@ -839,10 +852,10 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
     if (!localStorage.getItem("level-card-game")) {
-        new start_1.StartPage(appElement);
+        new _start__WEBPACK_IMPORTED_MODULE_1__.StartPage(appElement);
     }
     else {
-        new play_1.PlayPage(appElement);
+        new _play__WEBPACK_IMPORTED_MODULE_0__.PlayPage(appElement);
     }
 });
 

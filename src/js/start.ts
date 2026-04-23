@@ -1,9 +1,8 @@
-import { templateEngine } from "../lib/template-engine.js";
+import { templateEngine } from "../lib/template-engine";
 import { PlayPage } from "./play";
 
 export class StartPage {
     private element: HTMLElement;
-    private currentPage: string;
     private level: HTMLElement;
     private buttonChoice: HTMLElement | null = null;
     private levelItems: NodeListOf<Element> | null = null;
@@ -13,7 +12,6 @@ export class StartPage {
             throw new Error("передана не HTML элемент");
         }
         this.element = element;
-        this.currentPage = "start";
 
         this.onHendlerClickLevel = this.onHendlerClickLevel.bind(this);
         this.onHendkerClickStart = this.onHendkerClickStart.bind(this);
@@ -44,7 +42,6 @@ export class StartPage {
 
     onHendkerClickStart() {
         this.element.innerHTML = "";
-        this.currentPage = "play";
         new PlayPage(this.element);
     }
 
